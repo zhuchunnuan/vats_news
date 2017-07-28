@@ -1,0 +1,197 @@
+.newList {
+    flex-wrap: nowrap;
+    flex: 1;
+}
+
+.sliderHeader {
+    flex-wrap: nowrap; 
+}
+
+.sliderImgNew {
+    flex-wrap: nowrap;
+    height: 160;
+}
+
+.sliderImgNewImg {
+    flex: 1;
+    scaleType: cover;
+    cacheType: memory;
+    fade: true;
+}
+
+.sliderImgNewMarkBox {
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 30;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+}
+
+.sliderImgNewMark {
+    width: 6;
+    height: 6;
+    border-radius: 3;
+    background-color: #ffffff;
+    margin: 0 5 0 0;
+}
+
+.sliderImgNewTextBox {
+    flex: 1;
+    singleline: true;
+    margin: 0 10 0 10;
+    font-size: 14;
+    color: #ffffff;
+}
+
+.newListCell {
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+}
+
+.newListCellImg {
+    flex: 1;
+    height: 65;
+    margin: 8 8 8 8;
+    scaleType: cover;
+    cacheType: memory;
+    fade: true;
+}
+
+.newListCellTextBox {
+    height: 60;
+    flex: 2;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    margin: 0 8 0 0;
+}
+
+.newListCellText {
+    text-align: left;
+    maxlines: 2;
+    font-size: 16;
+    color: #000000;
+}
+
+.newListCellBottom {
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+
+.newListCellType {
+    text-align: left;
+    singleline: true;
+    font-size: 13;
+    color: #a8a8a8;
+}
+
+.newListCellApply {
+    flex: 1;
+    text-align: right;
+    singleline: true;
+    font-size: 13;
+    color: #a8a8a8;
+}
+
+.newListCell2 {
+    flex-wrap: nowrap;
+}
+
+.newListCell2Text {
+    text-align: left;
+    singleline: true;
+    margin: 8 8 8 8;
+    font-size: 16;
+    color: #000000;
+}
+
+.newListCell2ImgBox {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.newListCell2Img {
+    flex: 1;
+    height: 65;
+    scaleType: cover;
+    cacheType: memory;
+    fade: true;
+}
+
+.newListCell2Bottom {
+    flex-wrap: nowrap;
+    flex-direction: row;
+    margin: 8 8 8 8;
+}
+
+.newListCell2Type {
+    text-align: left;
+    singleline: true;
+    font-size: 13;
+    color: #a8a8a8;
+}
+
+.newListCell2Apply {
+    flex: 1;
+    text-align: right;
+    singleline: true;
+    font-size: 13;
+    color: #a8a8a8;
+}
+
+.topRefresh {
+    align-items: center;
+}
+
+.topRefreshAd {
+    width: 150;
+    height: 150;
+    scaleType: cover;
+}
+
+.topRefreshBox {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.topRefreshImage {
+    width: 40;
+    height: 40;
+    margin: 0 0 0 0;
+    scaleType: cover;
+}
+
+.topRefreshText {
+    width: 100;
+    text-align: center;
+    font-size: 15;
+    color: #c2c2c2;
+}
+
+.newListFooter {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.newListFooterImage {
+    width: 30;
+    height: 30;
+    margin: 0 0 0 0;
+    scaleType: cover;
+}
+
+.newListFooterText {
+    width: 100;
+    text-align: center;
+    font-size: 15;
+    color: #c2c2c2;
+}

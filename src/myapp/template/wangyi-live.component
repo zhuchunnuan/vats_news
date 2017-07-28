@@ -1,0 +1,243 @@
+<page>
+    <module>
+        <![CDATA[
+            
+            require("wangyi-livetabbar");
+             require("wangyi-livelist");
+    ]]>
+    </module>
+    <script>
+        <![CDATA[
+        var document = require("Document");
+        var ui = require("UI");
+        var console = require("Console");
+        var device = require("Device");
+        var Time = require("Time");
+
+        function Wangyilive() {
+
+            this.datas = [];
+
+            this.datas_2 = [];
+
+            this.livetabbar = null;
+        }
+
+
+        Wangyilive.prototype.created = function () {
+            var Adapter = require("ListAdapter");
+            var weakSelf = this;
+            //滑动容器
+            var slider = this.getElement("slider");
+            //顶部标题栏
+            var titleBoxTab = this.getElement("titleBoxTab");
+            var titleBoxTabItemBg = this.getElement("titleBoxTabItemBg");
+
+            this.livetabbar = this.getElement("livetabbar");
+            if (device.getOs().toLowerCase() == "ios") {
+
+            }
+            else {
+                this.livetabbar.setStyle("height", 68);
+                this.livetabbar.setStyle("padding", "24 0 0 0;")
+            }
+
+            //绑定slider拖动过程中切换顶部tab
+            this.livetabbar.binddom(slider);
+
+            var list = this.getElement("newList");
+            var list2 = this.getElement("newList2");
+            //由于该模板是后来动态注入的pageSelected已经不能默认执行一次，需要人为的触发一下，在initList()方法里面
+            slider.on("pageSelected", function (e, param) {
+                if (e.target == slider) {
+                    if (param == 0) {
+                        if (list.getAttr("tag") == "0") {
+                            weakSelf.addDatas();
+                            list.addData(weakSelf.datas, param);
+                            list.setAttr("tag", "1");
+                            list.init();
+                        }
+
+                    } else if (param == 1) {
+                        if (list2.getAttr("tag") == "0") {
+                            weakSelf.addDatas_2();
+                            list2.addData(weakSelf.datas_2, param);
+                            list2.setAttr("tag", "1");
+                            list2.init();
+                        }
+
+                    }
+                }
+            });
+
+            //在实际项目中，该方法应该放到messagelist模板里面执行，因为这里是测试数据，为了体现数据不一样，所以在外面执行
+            list.on("scrollToBottom", function (e) {
+
+                weakSelf.addDatas();
+                list.addData(weakSelf.datas);
+            });
+
+            list2.on("scrollToBottom", function (e) {
+
+                weakSelf.addDatas_2();
+                list2.addData(weakSelf.datas_2);
+            });
+
+
+
+        };
+
+        Wangyilive.prototype.addDatas = function () {
+            for (var i = 0; i < 2; i++) {
+                var data = {};
+                data.type = "cell";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/c58aa59c6f754cc69774b1a03abf014620161031102316.jpg_690x230x1x45.jpg";
+                data.text = "珠海航展首日：看歼20战机揭开神秘面纱";
+                data.person = "5516";
+                this.datas.push(data);
+
+                data = {}
+                data.type = "cell";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/e1a6e4660d8840fe9d4276303fa33fa820161101090048.jpeg_690x230x1x45.jpg";
+                data.text = "万圣节百鬼出街，顾又铭纽约带队捉鬼";
+                data.tag = "新闻";
+                data.person = "8889";
+                this.datas.push(data);
+
+                data = {}
+                data.type = "cell";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/9a345aac41714d728fa4140407b8c52820161031173641.jpg_690x230x1x45.jpg";
+                data.text = "【股市大直播】优选成长股 迎战11月";
+                data.person = "1756";
+                this.datas.push(data);
+
+                data = {}
+                data.type = "cell";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/65a7653e7e1c4a06bb59fdefc4f04f9320161019161408.jpg_690x230x1x45.jpg";
+                data.text = "4000公里外看地球，体验“上帝视角”";
+                data.person = "10000";
+                this.datas.push(data);
+
+                data = {}
+                data.type = "cell";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/96517d92bd8549969d6c5118556d748620161031205735.jpg_690x230x1x45.jpg";
+                data.text = "【周州有养】哈佛女学霸：育儿盲区大清理";
+                data.person = "10000";
+                this.datas.push(data);
+            }
+        };
+
+        Wangyilive.prototype.addDatas_2 = function () {
+            for (var i = 0; i < 2; i++) {
+                var data = {};
+                data.type = "cell_2";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/5f6e78f687e44d9eaf2ad6dc1f02ee0420161104134528.jpg_690x230x1x45.jpg";
+                data.text = "2016中国网络视频秋季高峰论坛";
+                data.person = "65789";
+                this.datas_2.push(data);
+
+                data = {}
+                data.type = "cell_2";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/b2d47a1e188948e18ef0d8152109259e20161102170815.jpg_690x230x1x45.jpg";
+                data.text = "顶级创客相聚“不死法则”艾问峰会";
+                data.tag = "新闻";
+                data.person = "8889";
+                this.datas_2.push(data);
+
+                data = {}
+                data.type = "cell_2";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/1d7a7fca25034ac99866969e02b7fef320161102100936.jpg_690x230x1x45.jpg";
+                data.text = "【匠心匠艺】上千块的扇子究竟贵在哪？";
+                data.person = "1756";
+                this.datas_2.push(data);
+
+                data = {}
+                data.type = "cell_2";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/92e20723d49d4752bba4d2e80fff369320161103111344.jpg_690x230x1x45.jpg";
+                data.text = "美女妈妈教你做 百香果磅蛋糕";
+                data.person = "10000";
+                this.datas_2.push(data);
+
+                data = {}
+                data.type = "cell_2";
+                data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/771d1f254816450baf6eeb36b5c679dd20161103214422.jpg_690x230x1x45.jpg";
+                data.text = "为什么黄晓明带妈妈来青岛这个地方？";
+                data.person = "10000";
+                this.datas_2.push(data);
+            }
+        };
+
+        Wangyilive.prototype.initList = function () {
+            //滑动容器
+            var slider = this.getElement("slider");
+            //这里需要人为的触发下
+          
+			slider.refresh();
+
+
+
+
+        };
+
+        //赋值给module.exports
+        module.exports = Wangyilive;
+    ]]>
+    </script>
+    <style>
+        .slider {
+            flex: 1;
+            background-color: #ffffff;
+        }
+        
+        .classBox {
+            flex-wrap: wrap;
+            flex-direction: row;
+            height: 76;
+        }
+        
+        .classBoxExpand {
+            flex-wrap: wrap;
+            flex-direction: row;
+            height: 190;
+        }
+        
+        .classButton {
+            width: 72;
+            height: 30;
+            margin: 4;
+            border-radius: 15;
+            border-width: 0.5;
+            color: #5c5c5c;
+            background-color: transparent;
+            background-click-color: #eb413d;
+        }
+        
+        .classBoxAdd {
+            flex-wrap: nowrap;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .classBoxAddImg {
+            width: 20;
+            height: 20;
+            margin: 5 10 5 10;
+            scaleType: contain;
+        }
+    </style>
+    <ui>
+        <box id="rootBox">
+            <livetabbar id="livetabbar" />
+
+            <!--新闻滑动slider-->
+            <slider id="slider" class="slider">
+                <livelist id="newList" tag="0" />
+                <livelist id="newList2" tag="0" />
+                <box>
+                    <text>我是第三页</text>
+                </box>
+            </slider>
+        </box>
+    </ui>
+</page>

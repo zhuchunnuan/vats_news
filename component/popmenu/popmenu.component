@@ -1,0 +1,340 @@
+<!--
+样式：无
+属性：无
+方法：popinit(popjson);
+var popjson = {};
+popjson.height = 180;
+ //自身高度
+popjson.width = 300;
+  //自身宽度
+popjson.domobj = domobj;
+ //设置基于某个控件位置弹出
+
+//菜单子项数据
+popjson.datas = [;
+{
+    text:"菜单1",
+    icon:"res:yuanhongqian/image/ncontact-active.png",
+    handler:function(e){
+      console.log(e.target);
+      myappjs.alert("你点击了 菜单1");
+      popmenu.hide()();
+    }
+}
+]
+
+其中popjson.domobj:希望在某个控件位置弹出窗口的 控件对象
+
+show():显示pop
+hide()():隐藏pop
+
+事件：无
+-->
+<page>
+    <script>
+        <![CDATA[
+
+            var window = require("Window");
+            var document = require("Document");
+            var ListAdapter = require("ListAdapter");
+            var console = require("Console");
+            var time = require("Time");
+
+
+            var screenWidth = window.getScreenWidth();
+            var screenHeight = window.getScreenHeight();
+
+            var Popmenu = function() {
+                this.popbgid = null;
+                this.popcontent = null;
+                this.popjson = null;
+                this.fontColor = "#000000";
+                this.arrowIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAASCAMAAAAewWyUAAAANlBMVEVHcEz///////////////////////////////////////////////////////////////////+GUsxbAAAAEXRSTlMA2yOMM6Ra8swM6EX5F3IGuS9J5U8AAABsSURBVHhejdBHDsJAAMXQTO0l//6XBSGEQDjlrb3yBpzb7lhBCuu6K7ue9nLVjayXPM47a/Rm7Fnnqz6qP+5a0pfUjrrY9aNH7qb+TNws4GgzCgs2o73AZpQHbEbGwmZUPWxGqcFm1CNsZvMBGGUX6R6TXGkAAAAASUVORK5CYII=";
+
+                this.pathLocation = "";
+                this.rootDom = null;
+
+                this.popshow = false;
+
+            };
+
+            module.exports = Popmenu;
+
+            Popmenu.prototype = {
+
+                created: function() {
+                    //console.log("进入了created");
+                },
+                //属性变更回调函数
+                attrChanged: function(attrName, attrValue) {
+
+                },
+                //样式变更回调函数
+                styleChanged: function(styleName, styleValue) {
+
+                },
+                popinit: function(popjson) {
+                    var copythis = this;
+                    // time.setTimeout(function() {
+
+                    copythis.popinit2(popjson);
+                    // }, 50);
+
+                },
+                popinit2: function(popjson) {
+                    //这里是得到组件所在的uixml页面的绝对路径目录
+                    this.pathLocation = document.getPathLocation();
+                    this.rootDom = document.getRootElement();
+                    this.popbgid = this.getElement("popbgid");
+                    this.popjson = popjson;
+
+                    var popmenuHeight = this.popjson.height;
+                    var popmenContentHeight = this.popjson.height - 10;
+                    var popmenuWidth = this.popjson.width;
+
+                    if (popjson.fontColor != null) {
+                        this.fontColor = this.popjson.fontColor
+                    }
+
+                    //根据传入的控件对象计算小箭头和弹出框的位置
+                    var top = 0;
+                    var left = 0;
+                    var arrowTop = 0;
+                    var arrowLeft = 0;
+                    var domobj = this.popjson.domobj;
+                    var framejson = domobj.getAbsoluteFrame();
+
+
+                    //  console.log("x:" + framejson.x + ";y:" + framejson.y + ";width:" + framejson.width + ";height:" + framejson.height);
+
+                    if ((framejson.x + framejson.width / 2) >= popmenuWidth / 2 && screenWidth - (framejson.x + framejson.width / 2) <= popmenuWidth / 2) {
+                        //这种情况弹出框只能在最右侧
+                        left = screenWidth - popmenuWidth - 6;
+                        top = framejson.y + framejson.height + 2;
+
+                    } else if ((framejson.x + framejson.width / 2) >= popmenuWidth / 2 && screenWidth - (framejson.x + framejson.width / 2) >= popmenuWidth / 2) {
+                        //这种情况情况窗口应该在屏幕中间区域
+                        //screenWidth - (framejson.width/2+framejson.x)
+                        left = (framejson.x + framejson.width / 2) - popmenuWidth / 2;
+                        top = framejson.y + framejson.height + 2;
+                    }
+                    if ((framejson.x + framejson.width / 2) <= popmenuWidth / 2 && screenWidth - (framejson.x + framejson.width / 2) >= popmenuWidth / 2) {
+                        //这种情况弹出框只能在最左侧
+                        left = 0 + 6;
+                        top = framejson.y + framejson.height + 2;
+
+                    }
+
+                    arrowLeft = (framejson.x + framejson.width / 2) - left - 11;
+                    var popContent = '';
+
+                    var popjsondata = this.popjson.datas;
+
+                    for (var i = 0; i < popjsondata.length; i++) {
+
+
+                        var imagesrc = '';
+
+
+                        if (popjsondata[i].icon == null || popjsondata[i].icon == "") {
+
+
+                        } else {
+                            imagesrc = '<image src="' + popjsondata[i].icon + '"  index="' + i + '"  id="image_' + i + '"    class="list-cell-limage" style="width:25;height:25;margin:6 6 6 6" />';
+
+                            if ((popjsondata[i].icon).indexOf("res:") > -1 || (popjsondata[i].icon).indexOf("http://") > -1 || (popjsondata[i].icon).indexOf("https://") > -1) {
+
+                            } else {
+                                popjsondata[i].icon = this.pathLocation + "/" + popjsondata[i].icon;
+                            }
+
+                        }
+
+                        var linestr = '';
+                        if (i < popjsondata.length - 1) {
+
+                            linestr = '<line style="line-size:0.5"/>';
+                        } else {
+                            linestr = '';
+                        }
+
+                        popContent = popContent + '<box  class="onelist" index="' + i + '" id="box_' + i + '">' +
+                            '' + imagesrc + '' +
+                            '<box class="onelist-cell-textbox"  id="text_' + i + '"  index="' + i + '">' +
+                            '<text  id="text_' + i + '"  index="' + i + '"  class="list-cell-text flex1" style="font-size:15;singleline:true;text-overflow:ellipsis;color:' + this.fontColor + '">' + popjsondata[i].text + '</text>' +
+                            '</box>' +
+                            '</box>' +
+                            '' + linestr + '';
+                    }
+
+                    var popxmlstr = '<box class="popmenu" style="height:' + popmenuHeight + ';width:' + popmenuWidth + ';top:' + top + ';left:' + left + ';padding:10 0 0 0">' +
+                        '<box class="popmenu-content" id="popcontent" style="top:-' + popmenContentHeight + ';height:' + popmenContentHeight + ';width:' + popmenuWidth + ';background-color:#ffffff;border-radius:4;">'
+                        // +'<image src="res:sprite_component/image/pop_bg.9.png" class="bgimage"/>'
+                        +
+                        '<scroll class="flex1" id="scrollid" style="margin:8 0 8 0;" scrollbar="false">' +
+                        '' + popContent + '' +
+                        '</scroll >' +
+                        '</box> ' +
+                        '<image src="' + this.arrowIcon + '" style="width:20;height:10;position:absolute;top:1;left:' + arrowLeft + '" /> ' +
+                        '</box>';
+
+                    this.popbgid.clear();
+                    var popmenuobj = document.createElementByXml(popxmlstr, this);
+                    this.popbgid.appendChild(popmenuobj);
+                    this.rootDom.appendChild(this);
+                    this.rootDom.refresh();
+
+
+                    this.popcontent = this.getElement("popcontent");
+                    var copythis = this;
+                    this.popbgid.on("touchUp", function(e) {
+                        var objid = e.target.getId();
+                        if (objid == "popbgid") {
+                            copythis.hide();
+
+                        }
+                    });
+
+                    var scrollid = this.getElement("scrollid");
+                    scrollid.on("touchDown", function(e) {
+                        var index = e.target.getAttr("index");
+                        var bb = copythis.getElement("box_" + index);
+                        bb.setStyle("background-color", "#F5F5F5");
+                    });
+
+                    scrollid.on("touchUp", function(e) {
+                        var index = e.target.getAttr("index");
+                        var bb = copythis.getElement("box_" + index);
+                        bb.setStyle("background-color", "#ffffff");
+                    });
+
+                    scrollid.on("touchCancel", function(e) {
+                        var index = e.target.getAttr("index");
+                        var bb = copythis.getElement("box_" + index);
+                        bb.setStyle("background-color", "#ffffff");
+                    });
+
+                    scrollid.on("click", function(e) {
+                        var index = e.target.getAttr("index");
+                        if (index == null) {
+                            return;
+                        }
+                        if (popjson.datas[index].handler != null && typeof popjson.datas[index].handler == 'function') {
+                            copythis.popjson.datas[index].handler(e);
+                        }
+                    });
+
+
+                },
+                show: function() {
+
+                    screenWidth = window.getScreenWidth();
+                    screenHeight = window.getScreenHeight();
+                    var copythis = this;
+
+                    var framejson = this.popcontent.getFrame();
+                    if (this.popshow == false) {
+
+                        this.popbgid.setStyle("visibility", "visible");
+                        var jsonData1 = {};
+                        var aniAry1 = new Array();
+
+                        //第一个动画
+                        var jsonAni1 = {};
+                        jsonAni1.delay = 0;
+                        jsonAni1.duration = 150;
+                        jsonAni1.curve = "linear";
+                        jsonAni1.props = {};
+                        jsonAni1.props.backgroundColor = "rgba(0,0,0,0.3)";
+                        aniAry1.push(jsonAni1);
+                        jsonData1.animators = aniAry1;
+                        this.popbgid.startAnimator(jsonData1, function() {
+                            // copythis.popbgid.releaseAnimator();
+
+                        });
+
+
+                        var jsonData2 = {};
+                        var aniAry2 = new Array();
+
+                        //第二个动画
+                        var jsonAni2 = {};
+                        jsonAni2.delay = 0;
+                        jsonAni2.duration = 150;
+                        jsonAni2.curve = "linear";
+                        jsonAni2.props = {};
+                        jsonAni2.props.translationY = framejson.height;
+                        aniAry2.push(jsonAni2);
+                        jsonData2.animators = aniAry2;
+                        copythis.popcontent.startAnimator(jsonData2, function() {
+                            copythis.popshow = true;
+                            // copythis.popcontent.releaseAnimator();
+                        });
+
+                    }
+                },
+                hide: function() {
+
+                    var copythis = this;
+                    if (this.popshow == true) {
+
+                        var jsonData1 = {};
+                        var aniAry1 = new Array();
+                        //第一个动画
+                        var jsonAni1 = {};
+                        jsonAni1.delay = 0;
+                        jsonAni1.duration = 140;
+                        jsonAni1.curve = "linear";
+                        jsonAni1.props = {};
+                        jsonAni1.props.backgroundColor = "rgba(0,0,0,0)";
+                        aniAry1.push(jsonAni1);
+                        jsonData1.animators = aniAry1;
+                        copythis.popbgid.startAnimator(jsonData1, function() {
+
+                        });
+
+
+
+                        //这里得到的值，还没有发生变化，
+                        //  var framejson = this.popcontent.getFrame();
+                        var jsonData2 = {};
+                        var aniAry2 = new Array();
+                        //第二个动画
+                        var jsonAni2 = {};
+                        jsonAni2.delay = 0;
+                        jsonAni2.duration = 140;
+                        jsonAni2.curve = "linear";
+                        jsonAni2.props = {};
+                        jsonAni2.props.translationY = 0;
+                        aniAry2.push(jsonAni2);
+                        jsonData2.animators = aniAry2;
+                        this.popcontent.startAnimator(jsonData2, function() {
+                            copythis.popbgid.setStyle("visibility", "hidden");
+                            copythis.popshow = false;
+
+                        });
+
+
+
+
+
+
+                    }
+                },
+                loadData: function(options) {
+
+
+                }
+            }
+        ]]>
+    </script>
+    <style>
+        @import url("popmenu.color.css");
+        @import url("popmenu.layout.css");
+    </style>
+    <ui>
+        <box id="popbgid" class="popbg">
+
+        </box>
+    </ui>
+</page>

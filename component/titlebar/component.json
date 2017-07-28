@@ -1,0 +1,5 @@
+{
+    "require_id": "titlebarUI",
+    "index": "titlebar.component",
+    "version": "1.0.3"
+}

@@ -1,0 +1,206 @@
+<page>
+    <script>
+        <![CDATA[
+            var window = require("Window");
+            var document = require("Document");
+            var listadapter = require("ListAdapter");
+            var console = require("Console");
+            var ui = require("UI");
+            var http = require("Http");
+            var time = require("Time");
+            var device = require("Device");
+            var $ = require("JQLite");
+            var weixin = require("WeiXin");
+            var qq = require("Qq");
+
+            require("titlebarUI");
+            require("popbottommenuUI");
+
+            var popbottommenu = null;
+
+
+            var dodata = {
+                isIos: false,
+                isAndroid: true,
+                fanhui: function(e) {
+                    window.close();
+                },
+
+                fenxiang: function(e) {
+                    console.log("点击了分享");
+                    popbottommenu.show();
+                }
+            };
+
+
+            var imgPath = "";
+            var url = "";
+            var title = "";
+            var description = "";
+            window.on("loaded", function(e) {
+                var titlebarid = document.getElement("titlebarid");
+                var webviewid = document.getElement("webviewid");
+                /*titlebarid.on("rtextClick", function(e) {
+                    popbottommenu.show();
+                });*/
+
+
+                $("#boxid").render(dodata);
+
+                if (device.getOs() == "iOS") {
+                    dodata.isIos = true;
+                    dodata.isAndroid = false;
+                    $.ui.refreshDom("#boxid");
+                } else {
+                    dodata.isIos = false;
+                    dodata.isAndroid = true;
+                }
+
+                var getdata = window.getData();
+                url = getdata.url;
+                imgPath = getdata.imgPath;
+                description = getdata.description;
+                webviewid.setAttr("url", url);
+
+
+                webviewid.on("titleChange", function(e, param) {
+                    console.log("titleChange");
+                    console.log(JSON.stringify(param));
+                    title = param.title;
+
+
+                });
+            });
+
+            window.on("animator", function(e) {
+                popbottommenu = document.createElement("popbottommenu");
+                var popjson = {
+                    datas: [{
+                            text: "分享到微信好友",
+                            handler: function(e) {
+                                popbottommenu.hide();
+                                var fenxjson = {};
+                                fenxjson.type = "session";
+                                fenxjson.url = url;
+                                fenxjson.title = title;
+                                fenxjson.description = description;
+                                fenxjson.imgPath = imgPath;
+                                weixin.shareNews(fenxjson, function(json) {
+                                    if (json.code == 0) {
+                                        $.ui.toast("分享成功", 0);
+                                    } else {
+                                        $.ui.toast(json.errMsg, 0);
+                                    }
+                                });
+                            }
+                        },
+                        {
+                            text: "分享到微信朋友圈",
+                            handler: function(e) {
+                                popbottommenu.hide();
+                                var fenxjson = {};
+                                fenxjson.type = "timeline";
+                                fenxjson.url = url;
+                                fenxjson.title = title;
+                                fenxjson.description = description;
+                                fenxjson.imgPath = imgPath;
+                                weixin.shareNews(fenxjson, function(json) {
+                                    if (json.code == 0) {
+                                        $.ui.toast("分享成功", 0);
+                                    } else {
+                                        $.ui.toast(json.errMsg, 0);
+                                    }
+                                });
+                            }
+                        },
+                        {
+                            text: "分享到QQ好友",
+                            handler: function(e) {
+                                popbottommenu.hide();
+                                var fenxjson = {};
+                                fenxjson.type = "QFriend";
+                                fenxjson.url = url;
+                                fenxjson.title = title;
+                                fenxjson.description = description;
+                                fenxjson.imgPath = imgPath;
+                                qq.shareNews(fenxjson, function(json) {
+                                    if (json.code == 0) {
+                                        $.ui.toast("分享成功", 0);
+                                    } else {
+                                        $.ui.toast(json.errMsg, 0);
+                                    }
+                                });
+                            }
+                        },
+                        {
+                            text: "分享到QQ空间",
+                            handler: function(e) {
+                                popbottommenu.hide();
+                                var fenxjson = {};
+                                fenxjson.type = "QZone";
+                                fenxjson.url = url;
+                                fenxjson.title = title;
+                                fenxjson.description = description;
+                                fenxjson.imgPath = imgPath;
+                                qq.shareNews(fenxjson, function(json) {
+                                    if (json.code == 0) {
+                                        $.ui.toast("分享成功", 0);
+                                    } else {
+                                        $.ui.toast(json.errMsg, 0);
+                                    }
+                                });
+                            }
+                        }
+                    ]
+                };
+
+                popbottommenu.popinit(popjson);
+            });
+
+        ]]>
+    </script>
+    <style>
+        .rootBox {
+            background-color: #e5e5e5;
+            width: fill_screen;
+            height: fill_screen;
+        }
+
+        .titlebar_ios {
+            background-color: rgba(69, 139, 255, 1);
+            title-color: #ffffff;
+            left-color: #ffffff;
+            height: 64;
+            padding: 20 0 0 0;
+        }
+
+        .titlebar_android {
+            background-color: rgba(69, 139, 255, 1);
+            title-color: #ffffff;
+            left-color: #ffffff;
+            height: 68;
+            padding: 24 0 0 0;
+            right-color: #ffffff;
+        }
+
+        .flex1 {
+            flex: 1;
+        }
+
+        webview {
+            /*position: absolute;
+            top: 64;
+            left: 0;
+            right: 0;
+            bottom: 0;*/
+            flex: 1;
+        }
+    </style>
+    <ui>
+        <box class="rootBox" id="boxid">
+            <titlebar id="titlebarid" v-on:ltextClick="fanhui" v-on:rtextClick="fenxiang" rtext="分享" class="titlebar_android" v-class="{titlebar_ios:isIos,titlebar_android:isAndroid}" ltext="返回" title="新闻详情" />
+            <webview id="webviewid" />
+
+        </box>
+    </ui>
+</page>

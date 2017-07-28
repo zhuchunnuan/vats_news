@@ -1,0 +1,44 @@
+.rootBox {
+    width: fill_screen;
+    height: fill_screen;
+}
+
+menubar {
+    color: #a8a8a8;
+    current-color: #eb413d;
+    height: 50;
+    background-color: #FFFFFF; 
+}
+
+.new {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 50;
+    right: 0;
+}
+
+.live {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 50;
+    right: 0;
+}
+
+.talk {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 50;
+    right: 0;
+}
+
+.me {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 50;
+    right: 0;
+
+}

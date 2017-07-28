@@ -1,0 +1,343 @@
+<page>
+    <module>
+        <![CDATA[
+     
+        require("buttonUI");  
+        require("tabbarUI");
+        require("newsliderUI");       
+        require("wangyi-messagelist"); 
+    ]]>
+    </module>
+    <script>
+        <![CDATA[
+        var document = require("Document");
+        var ui = require("UI");
+        var console = require("Console");
+        var device = require("Device");
+        var Time = require("Time");
+        var window = require("Window");
+
+        function Wangyimessage() {
+            this.datas = [];
+            this.datas_2 = [];
+            this.sliderBox = null;
+            this.tabbarjson = {};
+
+        }
+
+        //赋值给module.exports
+        module.exports = Wangyimessage;
+
+        Wangyimessage.prototype = {
+            created: function () {
+                var titleBox = this.getElement("titleBox");
+                if (device.getOs().toLowerCase() == "ios") {
+
+                }
+                else {
+                    titleBox.setStyle("height", 68);
+                    titleBox.setStyle("padding", "24 0 0 0;")
+                }
+
+
+                var tabbarDatas = new Array();
+                tabbarDatas = [
+                    { "text": "头条" },
+                    { "text": "精选" },
+                    { "text": "娱乐" },
+                    { "text": "热点" },
+                    { "text": "体育" },
+                    { "text": "网易号" },
+                    { "text": "南京" },
+                    { "text": "轻松一刻" },
+                ];
+                this.tabbarjson.datas = tabbarDatas;
+
+
+                var datastest = new Array();
+
+
+
+                var tabbarid = this.getElement("tabbarid");
+                //滑动容器
+                var slider = this.getElement("slider");
+
+                var list = this.getElement("newList");
+                var list2 = this.getElement("newList2");
+                //滑动容器
+
+                //在实际项目中，该方法应该放到messagelist模板里面执行，因为这里是测试数据，为了体现数据不一样，所以在外面执行
+                list.on("scrollToBottom", function (e) {
+
+                    weakSelf.addDatas();
+                    list.addData(weakSelf.datas);
+                });
+                list2.on("scrollToBottom", function (e) {
+                    weakSelf.addDatas_2();
+                    list2.addData(weakSelf.datas_2);
+                });
+
+                slider.on("pageSelected", function (e, param) {
+
+                    //由于事件具有冒泡特性，这里只有滑动自己的时候才往下进行
+                    if (e.target == slider) {
+
+
+                        if (param == 0) {
+                            if (list.getAttr("tag") == "0") {
+
+                                weakSelf.addDatas();
+                                list.addData(weakSelf.datas);
+                                list.setAttr("tag", "1");
+                                list.init();
+                            }
+                        }
+                        if (param == 1) {
+                            if (list2.getAttr("tag") == "0") {
+                                weakSelf.addDatas_2();
+
+                                list2.addData(weakSelf.datas_2);
+                                list2.setAttr("tag", "1");
+                                list2.init();
+                            }
+                        }
+                    }
+                });
+
+
+
+
+
+
+                var weakSelf = this;
+                this.sliderBox = this.getElement("sliderBox");
+                //logo
+                var logo = this.getElement("titleBoxLogo");
+                logo.on("click", function (e) {
+                    window.close();
+                });
+
+
+
+
+                //下拉刷新超出区域触发触发
+                list.on("torefresh", function (e) {
+                    var tt = "成功为您推荐10条新内容";
+                    weakSelf.tipShow(tt);
+
+                });
+
+                //下拉刷新超出区域触发触发
+                list2.on("torefresh", function (e) {
+                    var tt = "成功为您推荐3条新内容";
+                    weakSelf.tipShow(tt);
+
+                });
+
+            },
+
+            tipShow: function (tt) {
+                var weakSelf = this;
+                var listRefreshTip = this.getElement("listRefreshTip");
+                var listRefreshTipText = this.getElement("listRefreshTipText");
+                listRefreshTipText.setText(tt);
+                listRefreshTip.refresh();
+
+                Time.setTimeout(function () {
+
+                    var jsonData = {};
+                    var aniAry = new Array();
+                    //第一个动画，同时做缩放和旋转动画
+                    var jsonAni1 = {};
+                    jsonAni1.delay = 0;
+                    jsonAni1.duration = 300;
+                    jsonAni1.curve = "linear";
+                    jsonAni1.props = {};
+                    jsonAni1.props.translationY = 40;
+                    aniAry.push(jsonAni1);
+                    jsonData.animators = aniAry;
+                    listRefreshTip.startAnimator(jsonData, function (code) {
+                        Time.setTimeout(function () {
+                            var jsonData = {};
+                            var aniAry = new Array();
+                            //第一个动画，同时做缩放和旋转动画
+                            var jsonAni1 = {};
+                            jsonAni1.delay = 0;
+                            jsonAni1.duration = 300;
+                            jsonAni1.curve = "linear";
+                            jsonAni1.props = {};
+                            jsonAni1.props.translationY = 0;//相对最初坐标
+                            aniAry.push(jsonAni1);
+                            jsonData.animators = aniAry;
+                            listRefreshTip.startAnimator(jsonData, function (code) {
+                                //释放动画
+                                listRefreshTip.releaseAnimator();
+                            });
+                        }, 1500);
+                    });
+                }, 100);
+
+
+
+
+            },
+            addDatas: function () {
+
+                for (var i = 0; i < 2; i++) {
+                    var data = {};
+                    data.type = "newListCell";
+                    data.image = "http://cms-bucket.nosdn.127.net/catchpic/8/86/863DC36B9130EC8CA081DBEE07287B83.jpg";
+                    data.text = "南京长江大桥封闭维修 公交新增两条大站快车";
+                    data.tag = "社会";
+                    data.message = "5516";
+                    this.datas.push(data);
+
+                    data = {}
+                    data.type = "newListCell";
+                    data.image = "http://cms-bucket.nosdn.127.net/catchpic/2/26/26404c60ff03c051271b583cffba43f1.jpg?imageView&thumbnail=550x0";
+                    data.text = "冷空气影响中国大部地区 青海内蒙等地将有降雪";
+                    data.tag = "新闻";
+                    data.message = "35";
+                    this.datas.push(data);
+
+                    data = {}
+                    data.type = "newListCell";
+                    data.image = "http://cms-bucket.nosdn.127.net/catchpic/4/46/46A195BB40A7EF0CBDC8635D56479816.jpg";
+                    data.text = "男子情绪失控吞18厘米长刀片 医生胃镜下取出";
+                    data.tag = "江苏";
+                    data.message = "756";
+                    this.datas.push(data);
+
+                    data = {}
+                    data.type = "newListCell";
+                    data.image = "http://cms-bucket.nosdn.127.net/catchpic/f/fc/fc584e8d70905367ac35fe103d908a63.jpg?imageView&thumbnail=550x0";
+                    data.text = "打伞小网红本尊现身:其实她是个快2岁的女宝";
+                    data.tag = "亲子";
+                    data.message = "481";
+                    this.datas.push(data);
+
+                    data = {}
+                    data.type = "newListCell2";
+                    data.image1 = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/bb75ab33fe1c4ca38763de8b3cb4fbb920161027131540.jpeg_190x120x1x85.jpg";
+                    data.image2 = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/2aebee092f9c48b6b8a1c4a123cd667d20161027105533.jpeg_190x120x1x85.jpg";
+                    data.image3 = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/ca46175c6fbe413084f1d14bed58c3e220161027105532.jpeg_190x120x1x85.jpg";
+                    data.text = '＂劝离门＂后现身 范冰冰露香肩面带微笑';
+                    data.tag = "娱乐";
+                    data.message = "1024";
+                    this.datas.push(data);
+
+                }
+            },
+
+            addDatas_2: function () {
+                for (var i = 0; i < 2; i++) {
+                    var data = {};
+                    data.type = "newListCell";
+                    data.image = "http://cms-bucket.nosdn.127.net/catchpic/8/82/82717bd35a2488e4040f78c76e7d409e.jpg?imageView&thumbnail=550x0";
+                    data.text = "南京一高校宿舍逢雨必漏 校方：何时修好要看天";
+                    data.tag = "社会";
+                    data.message = "5516";
+                    this.datas_2.push(data);
+
+                    data = {}
+                    data.type = "newListCell";
+                    data.image = "http://cms-bucket.nosdn.127.net/557c030455624434abf94545be6dff1120161029170304.jpeg?imageView&thumbnail=550x0";
+                    data.text = "轮椅男街头碰瓷 见警察来了撒腿就跑";
+                    data.tag = "新闻";
+                    data.message = "35";
+                    this.datas_2.push(data);
+
+                    data = {}
+                    data.type = "newListCell";
+                    data.image = "http://cms-bucket.nosdn.127.net/catchpic/b/b9/b9cc3869646e2a5a6d2f3fa9d4ac78e8.jpg?imageView&thumbnail=550x0";
+                    data.text = "李嘉诚内地库存盘点 投资物业仅剩20万平方米";
+                    data.tag = "房产";
+                    data.message = "756";
+                    this.datas_2.push(data);
+
+                    data = {}
+                    data.type = "newListCell";
+                    data.image = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/710fb17d51084193a222a5b7a2d59f5b20161029160315.jpeg_140x88x1x85.jpg";
+                    data.text = "福州楼盘违规被查：多家楼盘存违规蓄客收费嫌疑";
+                    data.tag = "亲子";
+                    data.message = "3378";
+                    this.datas_2.push(data);
+
+                    data = {}
+                    data.type = "newListCell2";
+                    data.image1 = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/7f9d64ccded64fc6bde05c7eb73ff68420161029161254.jpeg_190x120x1x85.jpg";
+                    data.image2 = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/b41a471393014de68abd87aac1f2411220161029161250.jpeg_190x120x1x85.jpg";
+                    data.image3 = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/52b6ca525e4447f5b0282be82b2d492220161029161251.jpeg_190x120x1x85.jpg";
+                    data.text = '大妈模特百年老桥上走秀 美艳＂冻＂人';
+                    data.tag = "娱乐";
+                    data.message = "1024";
+                    this.datas_2.push(data);
+                }
+            },
+            initList: function () {
+                var weakSelf = this;
+                var tabbarid = this.getElement("tabbarid");
+
+                tabbarid.binddom(this.getElement("slider"));
+
+                tabbarid.loadData(this.tabbarjson);
+
+
+            }
+        }
+    ]]>
+    </script>
+    <style>
+        @import url("messagecss");
+    </style>
+    <ui>
+        <box id="rootBox">
+            <!--顶部标题栏 -->
+            <box id="titleBox" class="titleBox">
+                <image id="titleBoxLogo" src="../image/logo.png" class="titleBoxLogo" />
+                <box class="titleBoxCenter" />
+                <box class="titleBoxRight">
+                    <image id="titleBoxRightSearch" src="../image/search.png" class="titleBoxRightSearch" />
+                    <box class="titleBoxCenter" />
+                    <image id="titleBoxRightSearch" src="../image/zhibo.png" class="titleBoxRightSearch" />
+                </box>
+            </box>
+
+            <!--内容区域 放置：类型栏，类型选择pop，新闻list -->
+            <box id="contentBox" class="contentBox">
+                <tabbar id="tabbarid" />
+                <box id="sliderBox" class="sliderBox">
+                    <!--新闻滑动slider-->
+                    <slider id="slider" class="slider">
+                        <!--头条slider Item-->
+                        <messagelist id="newList" tag="0" />
+                        <messagelist id="newList2" tag="0" />
+                        <box>
+                            <text>我是第三页</text>
+                        </box>
+                        <box>
+                            <text>我是第四页</text>
+                        </box>
+                        <box>
+                            <text>我是第五页</text>
+                        </box>
+                        <box>
+                            <text>我是第六页</text>
+                        </box>
+                        <box>
+                            <text>我是第七页</text>
+                        </box>
+                        <box>
+                            <text>我是第八页</text>
+                        </box>
+
+                    </slider>
+                    <!--下拉刷新成功提示栏-->
+                    <box id="listRefreshTip" class="listRefreshTip">
+                        <text id="listRefreshTipText" class="listRefreshTipText"></text>
+                    </box>
+                </box>
+            </box>
+        </box>
+    </ui>
+</page>

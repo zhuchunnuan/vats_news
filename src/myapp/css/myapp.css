@@ -1,0 +1,27 @@
+.rootBox {
+    background-color: #0099cc;
+    width: fill_screen;
+    height: fill_screen;
+    justify-content: center;
+    align-items: center;
+}
+
+text {
+    color: #33b5e5;
+    font-size: 45;
+    text-align: center;
+}
+
+.textclose {
+    font-size: 20;
+    margin: 50 0 0 0;
+}
+
+.numText{
+    color:#ffffff;
+    font-size: 15;
+    text-align:right; 
+    position: absolute;
+    top:20;
+    right:10;
+}

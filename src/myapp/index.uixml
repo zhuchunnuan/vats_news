@@ -1,0 +1,22 @@
+<page>
+    <script>
+        <![CDATA[
+       var indexjs = require("indexjs"); 
+       require("menubarUI"); 
+       require("wangyi-message");
+    
+
+        ]]>
+    </script>
+    <style>
+        @import url("indexcss");
+    </style>
+    <ui>
+        <box class="rootBox" id="rootBox">
+            <box style="flex:1" />
+            <menubar type="normal" id="menubar1" v-on:selectedItem="selectedItem" />
+            <wangyi-message id="new" class="new"></wangyi-message> 
+             
+        </box>
+    </ui>
+</page>

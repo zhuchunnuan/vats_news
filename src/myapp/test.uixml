@@ -1,0 +1,41 @@
+<page>
+    <script>
+        <![CDATA[
+             var window = require("Window");
+    var document = require("Document");
+    var time = require("Time");
+    var app = require("App");
+
+    window.on("loaded",function(e){
+        var rootBox = document.getElement("rootBox");
+        rootBox.on("click",function(e){
+
+            var json = {};
+        json.url = "res:myapp/index.uixml";
+        json.target = "_blank";
+        json.id = "helloword";
+        json.statusBarColor = "#f9f9f9";
+        json.openAnimation = "push_r2l";
+        json.closeAnimation = "push_l2r";
+        json.statusBar = "transparent";
+        json.data = {};
+        json.data.text = "传值参数";
+        window.open(json);
+        });
+
+
+
+    });
+      
+
+        ]]>
+    </script>
+    <style>
+        @import url("indexcss");
+    </style>
+    <ui>
+        <box class="rootBox" id="rootBox">
+           <text>111</text>
+        </box>
+    </ui>
+</page>

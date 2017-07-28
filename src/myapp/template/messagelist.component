@@ -1,0 +1,276 @@
+<page>
+    <module>
+        <![CDATA[ 
+           require("newsliderUI");
+           require("buttonUI");
+        ]]>
+    </module>
+    <script>
+        <![CDATA[
+        var Adapter = require("ListAdapter");
+        var document = require("Document");
+        var ui = require("UI");
+        var console = require("Console");
+        var time = require("Time");
+        var window = require("Window");
+
+        //定义一个模板类
+        var MessageList = function () {
+            //这里定义一些变量
+            this.adapter = null;
+            this.datas = [];
+
+            this.list = null;
+
+            this.topRefresh = null;
+            this.newListFooter = null;
+            this.topRefreshText = null;
+            this.topRefreshImage = null;
+            this.topRefreshBox = null;
+            this.newslider1 = null;
+            this.newsliderjson = {};
+            this.newsliderid = null;
+
+        };
+
+        MessageList.prototype = {
+            //模板组件创建的时候执行
+            created: function () {
+
+                var weakSelf = this;
+                this.list = this.getElement("listid");
+
+                this.topRefresh = this.getElement("topRefresh");
+                this.newListFooter = this.getElement("newListFooter");
+                this.topRefreshText = this.getElement("topRefreshText");
+                this.topRefreshImage = this.getElement("topRefreshImage");
+                this.topRefreshBox = this.getElement("topRefreshBox");
+                this.newsliderid = this.getElement("newsliderid");
+                var datastest = new Array();
+
+                var data = {};
+                data.text = "华中师大教授讽范冰冰 不欢迎这样戏子";
+                data.imageurl = "http://cms-bucket.nosdn.127.net/d325d6e7b40e45598aadb2fcc67249c220161028103329.png";
+                data.defaulturl = "../image/default_null_big_src.png";
+                datastest.push(data);
+                var data = {};
+                data.text = "成都S型急弯马路如赛道 多车辆压线";
+                data.imageurl = "http://cms-bucket.nosdn.127.net/a54d528ac2c04d7fb5cf544d82e3e0db20161029081754.jpeg";
+                data.defaulturl = "../image/default_null_big_src.png";
+                datastest.push(data);
+                var data = {};
+                data.text = "成都S型急弯马路如赛道 多车辆压线2";
+                data.imageurl = "http://cms-bucket.nosdn.127.net/a54d528ac2c04d7fb5cf544d82e3e0db20161029081754.jpeg";
+                data.defaulturl = "../image/default_null_big_src.png";
+                datastest.push(data);
+                this.newsliderjson.datas = datastest;
+
+                this.initAdapter();
+
+                var dis = this.topRefresh.getAttr("distance");
+                this.topRefresh.on("drag", function (e, param) {
+                    if (param >= 0 && param < dis) {
+                        var text = "下拉推荐";
+                        weakSelf.topRefreshText.setText(text);
+                        weakSelf.topRefreshImage.setAttr("src", "../image/dragrefresh_down.png");
+                    } else if (param >= dis) {
+                        var text = "松开推荐";
+                        weakSelf.topRefreshText.setText(text);
+                        weakSelf.topRefreshImage.setAttr("src", "../image/dragrefresh_up.png");
+                    }
+                });
+
+                //下拉刷新超出区域触发触发 
+                this.topRefresh.on("refresh", function (e) {
+                    weakSelf.topRefreshText.setText("推荐中...");
+                    weakSelf.topRefreshImage.setAttr("src", "../image/dragrefresh_load.gif");
+
+                    //模拟网络请求延迟
+                    time.setTimeout(function () {
+
+                        weakSelf.topRefresh.reset();
+                        var arr = [];
+
+                        weakSelf.fire("torefresh", arr);
+
+                    }, 500);
+
+
+                });
+
+                this.list.on("scrollToBottom", function (e) {
+                    //console.log("scrollToBottom");
+                    time.setTimeout(function () {
+                        var arr = [];
+
+                        weakSelf.fire("scrollToBottom", arr);
+                    }, 200);
+                });
+
+             this.list.on("itemClick", function (e, position, sectionPostion) {
+     
+            var json = {};
+            json.url = "res:myapp/detail_news.uixml";
+            json.target = "_blank";
+            json.id = "news_detail";
+            json.statusBarColor = "#f9f9f9";
+            json.openAnimation = "push_r2l";
+            json.closeAnimation = "push_l2r";
+            json.statusBar = "transparent";
+            json.data = {};
+             console.log("2111111111111111" + json.url);
+           // json.data.url = data.url;
+           // json.data.imgPath = data.picUrl;
+           // json.data.description = data.description;
+            json.data.url = "https://scan.vats.com.cn/static/news20170728004.html";
+            json.data.imgPath = "https://scan.vats.com.cn/static/img/news/img13.jpg";
+            json.data.description ="m我是描述";
+            window.open(json);
+        });
+
+
+
+            },
+            initAdapter: function () {
+                var weakSelf = this;
+                //头条列表初始化
+                if (this.adapter == null) {
+                    this.adapter = new Adapter();
+
+                    this.adapter.on("getCellId", function (e, position) {
+                        var data = weakSelf.datas[position];
+                        if (data.type == "newListCell") {
+                            return "newListCell";
+                        } else if (data.type == "newListCell2") {
+                            return "newListCell2";
+                        } else {
+                            return "newListCell";
+                        }
+
+                    });
+                    this.adapter.on("getView", function (e, position) {
+
+                        var data = weakSelf.datas[position];
+
+                        if (data.type == "newListCell") {
+                            var text = e.target.getElement("newListCellText");
+                            var image = e.target.getElement("newListCellImg");
+
+                            var type = e.target.getElement("newListCellType");
+                            // console.log(type); 
+                            var apply = e.target.getElement("newListCellApply");
+                            text.setText(data.text);
+                            image.setAttr("src", data.image);
+                            type.setText(data.tag);
+                            apply.setText(data.message + "跟帖");
+                        } else if (data.type == "newListCell2") {
+                            var text = e.target.getElement("newListCell2Text");
+                            var image1 = e.target.getElement("newListCell2Img1");
+                            var image2 = e.target.getElement("newListCell2Img2");
+                            var image3 = e.target.getElement("newListCell2Img3");
+                            var type = e.target.getElement("newListCell2Type");
+                            var apply = e.target.getElement("newListCell2Apply");
+                            text.setText(data.text);
+                            image1.setAttr("src", data.image1);
+                            image2.setAttr("src", data.image2);
+                            image3.setAttr("src", data.image3);
+                            type.setText(data.tag);
+                            apply.setText(data.message + "跟帖");
+                        } else {
+                            //其他cell类型，不做处理
+                        }
+                    });
+                    this.adapter.on("getCount", function (e) {
+
+                        return weakSelf.datas.length;
+                    });
+                    this.adapter.on("getItem", function (e, position) {
+                        return weakSelf.datas[position];
+                    });
+                    this.adapter.on("getSectionCount", function (e) {
+                        return 1;
+                    });
+                    this.adapter.on("getSectionText", function (e, position) {
+                        return null;
+                    });
+
+                    this.list.setAdapter(this.adapter);
+                }
+            },
+            init: function () {
+                //loadData内部有刷新，不能放在created里面执行。
+                this.newsliderid.loadData(this.newsliderjson);
+            },
+            addData: function (datas) {
+                this.datas = datas;
+                this.adapter.refresh();
+
+            },
+            //属性变更回调函数
+            attrChanged: function (attrName, attrValue) { },
+            //样式变更回调函数
+            styleChanged: function (styleName, styleValue) { },
+            //监听横竖屏切换时候的回调
+            orientationChanged: function (orientation, screenWidth, screenHeight) { }
+
+        }
+
+        module.exports = MessageList;
+    ]]>
+    </script>
+    <style>
+        @import url("messagelistcss");
+    </style>
+    <ui>
+        <box id="newSliderItem" style="flex:1">
+            <!--头条滑动列表-->
+            <list class="newList" id="listid" scrollToTop="true" bottomDistance="120">
+                <!--图片滑动新闻slider 放置于列表header区域-->
+                <header class="sliderHeader">
+
+                    <newslider id="newsliderid" index="0" />
+                </header>
+                <!--文字新闻模板-->
+                <cell id="newListCell" class="newListCell">
+                    <image id="newListCellImg" defaultSrc="../image/default_null_src.png" class="newListCellImg" />
+                    <box id="newListCellTextBox" class="newListCellTextBox">
+                        <text id="newListCellText" class="newListCellText"></text>
+                        <box style="flex:1" />
+                        <box id="newListCellBottom" class="newListCellBottom">
+                            <text id="newListCellType" class="newListCellType"></text>
+                            <box style="flex:1" />
+                            <text id="newListCellApply" class="newListCellApply"></text>
+                        </box>
+                    </box>
+                </cell>
+                <!--图片新闻模板-->
+                <cell id="newListCell2" class="newListCell2">
+                    <text id="newListCell2Text" class="newListCell2Text"></text>
+                    <box id="newListCell2ImgBox" class="newListCell2ImgBox">
+                        <image id="newListCell2Img1" defaultSrc="../image/default_null_src.png" class="newListCell2Img" style="margin: 0 8 0 8" />
+                        <image id="newListCell2Img2" defaultSrc="../image/default_null_src.png" class="newListCell2Img" style="margin: 0 8 0 0" />
+                        <image id="newListCell2Img3" defaultSrc="../image/default_null_src.png" class="newListCell2Img" style="margin: 0 8 0 0" />
+                    </box>
+                    <box id="newListCell2Bottom" class="newListCell2Bottom">
+                        <text id="newListCell2Type" class="newListCell2Type"></text>
+                        <box style="flex:1" />
+                        <text id="newListCell2Apply" class="newListCell2Apply"></text>
+                    </box>
+                </cell>
+                <!--下拉刷新-->
+                <refresh id="topRefresh" type="top" distance="40" class="topRefresh">
+                    <image src="../image/dragfreshImage.png" class="topRefreshAd" />
+                    <box id="topRefreshBox" class="topRefreshBox">
+                        <image id="topRefreshImage" class="topRefreshImage" src="../image/dragrefresh_down.png" />
+                        <text id="topRefreshText" class="topRefreshText">下拉推荐</text>
+                    </box>
+                </refresh>
+                <!-- 列表下拉至底部触发 放置进度条-->
+                <footer id="newListFooter" class="newListFooter">
+                    <image id="newListFooterImage" class="newListFooterImage" src="../image/dragrefresh_load.gif" />
+                    <text id="newListFooterText" class="newListFooterText">正在载入</text>
+                </footer>
+            </list>
+        </box>
+    </ui>
+</page>

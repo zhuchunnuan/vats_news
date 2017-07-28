@@ -1,0 +1,297 @@
+<page>
+    <module>
+        <![CDATA[
+         require("newsliderUI");
+    
+
+    ]]>
+    </module>
+    <script>
+        <![CDATA[
+        var Adapter = require("ListAdapter");
+        var document = require("Document");
+        var ui = require("UI");
+        var console = require("Console");
+        var time = require("Time");
+        var window = require("Window");
+
+        //定义一个模板类
+        var Livelist = function () {
+            //这里定义一些变量
+            this.list = null;
+            this.adapter = null;
+            this.datas = null;
+            this.topRefresh = null;
+            this.newListFooter = null;
+            this.topRefreshText = null;
+            this.topRefreshImage = null;
+            this.topRefreshBox = null;
+
+            this.newsliderid = null;
+            this.newsliderjson = {};
+
+
+        };
+
+        Livelist.prototype = {
+            //模板组件创建的时候执行
+            created: function () {
+                var copythis = this;
+                this.list = this.getElement("newList");
+                this.datas = null;
+                this.topRefresh = this.getElement("topRefresh");
+                this.newListFooter = this.getElement("newListFooter");
+                this.topRefreshText = this.getElement("topRefreshText");
+                this.topRefreshImage = this.getElement("topRefreshImage");
+                this.topRefreshBox = this.getElement("topRefreshBox");
+                this.newsliderid = this.getElement("newsliderid");
+
+                this.datas = new Array();
+
+                var datastest = [];
+                var data = {};
+                data.text = "天啦撸，三石哥虐爽UGG,速来围观";
+                data.imageurl = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/6417b0cfcd7740f5bbe094261eefb34720161031061451.jpg_750x380x1x45.jpg";
+                data.defaulturl = "../image/default_null_big_src.png";
+                datastest.push(data);
+                var data = {};
+                data.text = "健身达人现场演示8块腹肌的秘密";
+                data.imageurl = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/0eca18a306f04ef49b791e2351f8184c20161027150355.jpg_750x380x1x45.jpg";
+                data.defaulturl = "../image/default_null_big_src.png";
+                datastest.push(data);
+                var data = {};
+                data.text = "小时代已经out了，请看网易美眉秀";
+                data.imageurl = "http://imgsize.ph.126.net/?imgurl=http://cms-bucket.nosdn.127.net/aa2570a1e3a44b55b8d854c09ddf5c7220161026174603.jpg_750x380x1x45.jpg";
+                data.defaulturl = "../image/default_null_big_src.png";
+                datastest.push(data);
+                this.newsliderjson.datas = datastest;
+
+                this.initAdapter();
+
+                var dis = this.topRefresh.getAttr("distance");
+                this.topRefresh.on("drag", function (e, param) {
+                    if (param >= 0 && param < dis) {
+                        var text = "下拉推荐";
+                        copythis.topRefreshText.setText(text);
+                        copythis.topRefreshImage.setAttr("src", "../image/dragrefresh_down.png");
+                    } else if (param >= dis) {
+                        var text = "松开推荐";
+                        copythis.topRefreshText.setText(text);
+                        copythis.topRefreshImage.setAttr("src", "../image/dragrefresh_up.png");
+                    }
+                });
+
+                //下拉刷新超出区域触发触发
+                this.topRefresh.on("refresh", function (e) {
+                    copythis.topRefreshText.setText("推荐中...");
+                    copythis.topRefreshImage.setAttr("src", "../image/dragrefresh_load.gif");
+                    time.setTimeout(function () {
+                        copythis.topRefresh.reset();
+
+                    }, 1000);
+                });
+
+                this.list.on("scrollToBottom", function (e) {
+                    time.setTimeout(function () {
+                        var arr = [];
+
+                        copythis.fire("scrollToBottom", arr);
+
+                    }, 1000);
+                });
+                //list item点击触发
+                this.list.on("itemClick", function (e, param) {
+                    var message = {};
+                    message.content = param;
+                    ui.toast(message);
+                });
+
+
+
+            },
+            initAdapter: function () {
+                //头条列表初始化
+                if (this.adapter == null) {
+                    this.adapter = new Adapter();
+                    var weakSelf = this;
+                    this.adapter.on("getCellId", function (e, position) {
+                        return "cell";
+                    });
+                    this.adapter.on("getView", function (e, position) {
+                        var data = weakSelf.datas[position];
+                        var cellImage = e.target.getElement("cellImage");
+                        var cellTitle = e.target.getElement("cellTitle");
+                        var cellBottomNumBox = e.target.getElement("cellBottomNumBoxText");
+                        cellImage.setAttr("src", data.image);
+                        cellTitle.setText(data.text);
+                        cellBottomNumBox.setText(data.person + "参与");
+                    });
+                    this.adapter.on("getCount", function (e) {
+                        return weakSelf.datas.length;
+                    });
+                    this.adapter.on("getItem", function (e, position) {
+                        return weakSelf.datas[position];
+                    });
+                    this.adapter.on("getSectionCount", function (e) {
+                        return 1;
+                    });
+                    this.adapter.on("getSectionText", function (e, sectionindex) {
+                        return null;
+                    });
+                    this.adapter.on("getSectionCount", function (e) {
+                        return 1;
+                    });
+                    this.adapter.on("getSectionText", function (e, sectionindex) {
+                        return null;
+                    });
+
+                    this.list.setAdapter(this.adapter);
+                }
+            },
+            addData: function (datas, index) {
+                if (index == 1) {
+                    this.list.hideHeader();
+                    this.list.refreshHeader();
+
+                }
+
+                this.datas = datas;
+                this.adapter.refresh();
+            },
+            init: function () {
+                console.log(this.newsliderid);
+                this.newsliderid.loadData(this.newsliderjson);
+            },
+            //属性变更回调函数
+            attrChanged: function (attrName, attrValue) { },
+            //样式变更回调函数
+            styleChanged: function (styleName, styleValue) { },
+            //监听横竖屏切换时候的回调
+            orientationChanged: function (orientation, screenWidth, screenHeight) { }
+
+        }
+
+        module.exports = Livelist;
+    ]]>
+    </script>
+    <style>
+        @import url("livelistcss");
+    </style>
+    <ui>
+        <!--热门slider Item-->
+        <box id="newSliderItem" style="flex:1">
+            <!--热门滑动列表-->
+            <list class="newList" id="newList" scrollToTop="true" bottomDistance="120">
+                <header class="sliderHeader">
+
+                    <newslider id="newsliderid" style="height: 130" index="0" />
+
+
+                    <box class="noticeBox">
+                        <text class="noticeBoxTitle">预告 /</text>
+                        <slider class="noticeBoxMarquee" direction="vertical" loop="true" autoPlay="true">
+                            <box class="noticeBoxMarqueeItem">
+                                <text class="noticeBoxMarqueeItemText">李治廷新片“囧当爹” 听他聊聊天</text>
+                            </box>
+                            <box class="noticeBoxMarqueeItem">
+                                <text class="noticeBoxMarqueeItemText">这场秀好Q 温雅杜若溪明星组团来</text>
+                            </box>
+                            <box class="noticeBoxMarqueeItem">
+                                <text class="noticeBoxMarqueeItemText">星星王子来啦 小S都夸他“太准”！</text>
+                            </box>
+                        </slider>
+                        <box class="noticeBoxNumBox">
+                            <text class="noticeBoxNum">23场</text>
+                            <image src="../image/arrow_right.png" class="noticeBoxNumImage" />
+                        </box>
+                    </box>
+
+                    <!--间隔-->
+                    <box class="line" />
+                    <!--直播列表 横向滚动-->
+                    <scroll direction="horizontal" scrollbar="false" class="liveClassScroll">
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://cms-bucket.nosdn.127.net/df8581b2c962454f86e40aebd0449bb820161028190713.jpeg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">全部直播号</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://imgcdn.ph.126.net/JcDPmtAzZ6jK2Y-JjD6tKg==/6631670298072102337.jpg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">咖啡地图</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://imgcdn.ph.126.net/6cbr4UyMSeaX9xENLrauRw==/6631756059980475880.jpg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">周州有养</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://imgcdn.ph.126.net/ugL_v4skgufGtwd_7NNSUQ==/6631495475723281140.jpg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">青年实验</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://imgcdn.ph.126.net/4E4xkjc4VBxKXWi91fc8yA==/6631719776095329972.jpg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">天天天哪</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://img1.cache.netease.com/news/2016/9/13/20160913153519f969c.jpg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">手机先吃</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://img5.cache.netease.com/news/2016/8/25/2016082511174763c52.png"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">MissQ校花</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://img5.cache.netease.com/ent/2015/4/15/20150415133808d09bd.jpg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">小世界</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://img1.cache.netease.com/ent/2015/4/15/201504151322052beb3.jpg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">我们单身</text>
+                        </box>
+                        <box class="liveClassScrollItem">
+                            <image defaultSrc="../image/default_null_small_src.png" src="http://cms-bucket.nosdn.127.net/a0b86b3ccd684d14a92a2817b77bd2b220161030181737.jpeg"
+                                class="liveClassScrollItemImage" />
+                            <text class="liveClassScrollItemText">成思妍直播</text>
+                        </box>
+                    </scroll>
+                </header>
+                <!--模板-->
+                <cell id="cell">
+                    <box class="cell">
+                        <image id="cellImage" defaultSrc="../image/default_null_big_src.png" class="cellImage" />
+                        <text id="cellTitle" class="cellTitle" />
+                        <box id="cellBottomBox" class="cellBottomBox">
+                            <box id="cellBottomTextBox" class="cellBottomTextBox">
+                                <text id="cellBottomText" class="cellBottomText">直播</text>
+                                <image src="../image/live_logo.png" class="cellBottomImage" />
+                            </box>
+                            <box id="cellBottomNumBox" class="cellBottomNumBox">
+                                <text id="cellBottomNumBoxText" class="cellBottomNumBoxText" />
+                            </box>
+                        </box>
+                    </box>
+                </cell>
+                <!--下拉刷新-->
+                <refresh id="topRefresh" type="top" distance="40" class="topRefresh">
+                    <image src="../image/dragfreshImage2.png" class="topRefreshAd" />
+                    <box id="topRefreshBox" class="topRefreshBox">
+                        <image id="topRefreshImage" class="topRefreshImage" src="../image/dragrefresh_down.png" />
+                        <text id="topRefreshText" class="topRefreshText">下拉推荐</text>
+                    </box>
+                </refresh>
+                <!-- 列表下拉至底部触发 放置进度条-->
+                <footer id="newListFooter" class="newListFooter">
+                    <image id="newListFooterImage" class="newListFooterImage" src="../image/dragrefresh_load.gif" />
+                    <text id="newListFooterText" class="newListFooterText">正在载入</text>
+                </footer>
+            </list>
+        </box>
+    </ui>
+</page>

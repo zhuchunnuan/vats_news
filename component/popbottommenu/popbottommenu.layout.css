@@ -1,0 +1,65 @@
+.flex1{
+	flex:1;
+}
+.flex2{
+	flex:2;
+}
+
+.bgimage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  point9area: 5 5 10 5;
+}
+
+.popbg{
+background-color:rgba(0,0,0,0);
+position:absolute;
+top:0;
+left:0;
+right:0;
+bottom:0;
+width:fill_screen;
+height:fill_screen;
+visibility:hidden;
+}
+
+.popmenu{
+	flex-direction:column;
+	/*justify-content:flex-end;*/ 
+	align-items:flex-start;
+	width:180;
+	height:250;
+	position:absolute;
+	top:60;
+	right:0
+}
+
+
+
+.popmenu-content{
+	width:180;
+	height:240;
+}
+
+.onelist{
+  flex-direction:row;
+	justify-content:flex-start;	
+	align-items:center;
+	padding:4 6 4 6;
+}
+.list-cell-text{
+    text-align: left;
+		flex-wrap:wrap;     
+    font-size: 17;
+}
+
+
+.onelist-cell-textbox{
+	flex-direction:row;
+  flex:1;
+  justify-content:start;	
+	align-items:center;
+}

@@ -1,0 +1,277 @@
+<!--
+样式：无
+属性：无
+方法：popinit(popjson);
+show(),hide();
+
+var popjson = {};
+    popjson.datas = [];
+    var json = {};
+    json.text = "交易记录";
+    json.handler = function(e){};
+    e标示当前点击选项的event事件
+  
+   popjson.datas.push(json);
+事件：无，
+-->
+<page>
+    <script>
+        <![CDATA[
+            var window = require("Window");
+            var document = require("Document");
+            var ListAdapter = require("ListAdapter");
+            var console = require("Console");
+            var time = require("Time");
+            var screenWidth_s = window.getScreenWidth();
+            var screenHeight_s = window.getScreenHeight();
+            //var datas;
+
+            var Popbottommenu = function() {
+                //初始化函数，用于处理组件属性及样式，入参为Json，包含两个参数：attributes（属性集，json格式），styles（样式集，json格式）
+                this.popbgid = null;
+                this.popcontent = null;
+                this.popjson = null;
+                this.fontColor = "#000000";
+            };
+
+            module.exports = Popbottommenu;
+
+            Popbottommenu.prototype = {
+                created: function() {
+                    //console.log("进入了created");
+                },
+                //属性变更回调函数
+                attrChanged: function(attrName, attrValue) {
+
+
+
+                },
+                //样式变更回调函数
+                styleChanged: function(styleName, styleValue) {
+
+
+
+                },
+                popinit: function(popjson) {
+                    var rootDom = document.getRootElement();
+                    this.popbgid = this.getElement("popbgid");
+                    this.popjson = popjson;
+                    // console.log(JSON.stringify(this.popjson));
+
+
+                    var popContent = '';
+                    for (var i = 0; i < popjson.datas.length; i++) {
+                        var linestr = '';
+                        if (i < popjson.datas.length - 1) {
+                            linestr = '<line style="line-size:0.5"/>';
+                        } else {
+                            linestr = '';
+                        }
+
+                        popContent = popContent +
+                            ' <box index="' + i + '" id="box_' + i + '" class="onelist" style="">' +
+                            ' <box  index="' + i + '" class="onelist-cell-textbox" style="height:40">' +
+                            ' <text  index="' + i + '"  class="list-cell-text flex1" style="font-size:18;text-align:center">' + popjson.datas[i].text + '</text>' +
+                            '</box>' +
+                            '</box>' +
+                            '' + linestr + '';
+                    }
+
+                    screenHeight_s = window.getScreenHeight();
+                    var popxmlstr = '<box class="column-flex-end" id="popcontent" style="position:absolute;top:' + screenHeight_s + ';left:0;right:0;background-color:#ececec;visibility:hidden">' +
+                        '<scroll id="scrollid" scrollbar="false" class="flex1" style="background-color:#ffffff;padding:0">' +
+                        '' + popContent + '' +
+                        ' </scroll >' +
+                        ' <box style="height:6"/>' +
+                        '<box id="cancel"  class="onelist" style="background-color:#ffffff" >' +
+                        ' <box class="onelist-cell-textbox" style="height:40">' +
+                        ' <text  class="list-cell-text flex1" style="font-size:18;text-align:center">取消</text> ' +
+                        '</box>' +
+                        '</box>  ' +
+                        ' </box>';
+
+                    this.popbgid.clear();
+
+                    // console.log(popxmlstr);
+                    var popmenuobj = document.createElementByXml(popxmlstr, this);
+                    this.popbgid.appendChild(popmenuobj);
+                    rootDom.appendChild(this);
+                    document.refresh();
+                    this.popcontent = this.getElement("popcontent");
+
+                    var copythis = this;
+                    this.popbgid.on("touchUp", function(e) {
+                        var objid = e.target.getId();
+                        if (objid == "popbgid") {
+                            copythis.hide();
+                        }
+
+                    });
+
+
+                    var cancel = this.getElement("cancel");
+                    cancel.on("touchDown", function(e) {
+                        this.setStyle("background-color", "#F5F5F5");
+                    });
+
+                    cancel.on("touchUp", function(e) {
+                        this.setStyle("background-color", "#ffffff");
+                    });
+
+                    cancel.on("touchCancel", function(e) {
+                        this.setStyle("background-color", "#ffffff");
+                    });
+
+                    cancel.on("click", function(e) {
+                        copythis.hide();
+                    });
+
+                    // bodyid.setStyle("display","block");
+                    document.refresh();
+                    var scrollid = this.getElement("scrollid");
+                    scrollid.on("touchDown", function(e) {
+                        var index = e.target.getAttr("index");
+                        var bb = copythis.getElement("box_" + index);
+                        bb.setStyle("background-color", "#F6F6F6");
+                    });
+
+                    scrollid.on("touchUp", function(e) {
+                        var index = e.target.getAttr("index");
+                        var bb = copythis.getElement("box_" + index);
+                        bb.setStyle("background-color", "#ffffff");
+                    });
+
+                    scrollid.on("touchCancel", function(e) {
+                        var index = e.target.getAttr("index");
+                        var bb = copythis.getElement("box_" + index);
+                        bb.setStyle("background-color", "#ffffff");
+                    });
+
+                    scrollid.on("click", function(e) {
+                        var index = e.target.getAttr("index");
+
+                        if (index == null) {
+                            return;
+                        }
+                        if (popjson.datas[index].handler != null && typeof popjson.datas[index].handler == 'function') {
+                            copythis.popjson.datas[index].handler(e);
+                        }
+                    });
+
+                },
+                show: function() {
+
+                    screenWidth_s = window.getScreenWidth();
+                    screenHeight_s = window.getScreenHeight();
+
+
+                    var copythis = this;
+                    this.popbgid.setStyle("visibility", "visible");
+                    var jsonData1 = {};
+                    var aniAry1 = new Array();
+
+                    //第一个动画
+                    var jsonAni1 = {};
+                    jsonAni1.delay = 0;
+                    jsonAni1.duration = 200;
+                    jsonAni1.curve = "linear";
+                    jsonAni1.props = {};
+                    jsonAni1.props.backgroundColor = "rgba(0,0,0,0.4)";
+                    aniAry1.push(jsonAni1);
+                    jsonData1.animators = aniAry1;
+                    this.popbgid.startAnimator(jsonData1, function() {
+
+                        // copythis.popbgid.releaseAnimator();
+
+                    });
+
+                    this.popcontent.setStyle("visibility", "visible");
+                    //移动之前先把内容放到到屏幕的下边缘
+                    var framejson = this.popcontent.getFrame();
+                    var jsonData2 = {};
+                    var aniAry2 = new Array();
+
+                    //第一个动画
+                    var jsonAni2 = {};
+                    jsonAni2.delay = 0;
+                    jsonAni2.duration = 200;
+                    jsonAni2.curve = "linear";
+                    jsonAni2.props = {};
+                    jsonAni2.props.translationY = -framejson.height;
+                    aniAry2.push(jsonAni2);
+                    jsonData2.animators = aniAry2;
+                    this.popcontent.startAnimator(jsonData2, function() {
+                        // copythis.popcontent.releaseAnimator();
+                    });
+                },
+                hide: function() {
+
+                    var copythis = this;
+
+                    var jsonData1 = {};
+                    var aniAry1 = new Array();
+                    var jsonAni1 = {};
+                    jsonAni1.delay = 0;
+                    jsonAni1.duration = 200;
+                    jsonAni1.curve = "linear";
+                    jsonAni1.props = {};
+                    jsonAni1.props.backgroundColor = "rgba(0,0,0,0)";
+                    aniAry1.push(jsonAni1);
+                    jsonData1.animators = aniAry1;
+                    copythis.popbgid.startAnimator(jsonData1, function() {
+
+                        //copythis.popbgid.releaseAnimator();
+                    });
+
+
+
+
+                    var jsonData2 = {};
+                    var aniAry2 = new Array();
+                    //第一个动画
+                    var jsonAni2 = {};
+                    jsonAni2.delay = 0;
+                    jsonAni2.duration = 200;
+                    jsonAni2.curve = "linear";
+                    jsonAni2.props = {};
+                    jsonAni2.props.translationY = 0;
+                    aniAry2.push(jsonAni2);
+                    jsonData2.animators = aniAry2;
+                    this.popcontent.startAnimator(jsonData2, function() {
+                        copythis.popcontent.setStyle("visibility", "hidden");
+                        // copythis.popcontent.releaseAnimator();
+                        //第一个动画
+                        copythis.popbgid.setStyle("visibility", "hidden");
+
+                    });
+
+
+
+                },
+                loadData: function(options) {},
+                orientationChanged: function(orientation, screenWidth, screenHeight) {
+
+                    this.popcontent.setStyle("width", screenWidth);
+                    this.popbgid.refresh();
+
+
+                }
+            }
+        ]]>
+    </script>
+    <style>
+        @import url("popbottommenu.color.css");
+        @import url("popbottommenu.layout.css");
+        /* aa{
+
+          visibility: visible;
+          visibility: hidden;
+        }*/
+    </style>
+    <ui>
+        <box id="popbgid" class="popbg">
+
+        </box>
+    </ui>
+
+</page>

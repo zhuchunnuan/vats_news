@@ -1,0 +1,185 @@
+.titleBox {
+    height: 64;
+    padding: 20 0 0 0;
+    background-color: #eb413d;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+}
+
+.titleBoxLogo {
+    width: 45;
+    height: 35;
+    margin: 0 10 0 10;
+    scaleType: contain;
+}
+
+.titleBoxCenter {
+    flex: 1;
+}
+
+.titleBoxRight {
+    width: 110;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 10 0 10;
+}
+
+.titleBoxRightSearch {
+    width: 35;
+    height: 35;
+    margin: 0 0 0 0;
+    scaleType: contain;
+}
+
+.titleBoxRightLive {
+    width: 80;
+    height: 35;
+    margin: 0 0 0 0;
+    scaleType: contain;
+}
+
+.popBox {
+    background-color: white;
+    opacity: 0.96;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.popBoxTitle {
+    height: 38;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    background-color: #f8f8f8;
+}
+
+.popBoxTitleText {
+    font-size: 15;
+    text-align: center;
+    color: #868686;
+    margin: 0 10 0 10;
+}
+
+.popBoxTitleAdd {
+    width: 45;
+    height: 38;
+    align-items: center;
+    justify-content: center;
+}
+
+.popBoxTitleImg {
+    width: 20;
+    height: 20;
+    margin: 0 10 0 10;
+    scaleType: contain;
+}
+
+.popScroll {
+    flex: 1;
+}
+
+.popBoxClass {
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.popBoxClassButton {
+    width: 72;
+    height: 35;
+    margin: 4;
+    border-radius: 0;
+    border-width: 0.5;
+    color: #5c5c5c;
+    background-click-color: #eb413d;
+}
+
+tabbar{
+    current-color:#eb413d;
+}
+
+.popBoxTitleOther {
+    height: 38;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    background-color: #f8f8f8;
+}
+
+.popBoxTitleAddText {
+    font-size: 15;
+    text-align: center;
+    color: #868686;
+    margin: 0 10 0 10;
+}
+
+.contentBox {
+    flex: 1;
+}
+
+.classBox {
+    height: 38;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    background-color: #ffffff;
+}
+
+.classBoxScroll {
+    flex: 1;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+}
+
+.classBoxScrollText {
+    font-size: 15;
+    text-align: center;
+    color: #5c5c5c;
+    margin: 0 10 0 10;
+}
+
+.classBoxAdd {
+    width: 45;
+    height: 38;
+    align-items: center;
+    justify-content: center;
+}
+
+.classBoxAddImg {
+    width: 20;
+    height: 20;
+    margin: 0 10 0 10;
+    scaleType: contain;
+}
+
+.sliderBox {
+    flex: 1;
+    background-color: #ffffff;
+}
+
+.slider {
+    flex: 1;
+}
+
+.listRefreshTip {
+    position: absolute;
+    top: -40;
+    left: 0;
+    right: 0;
+    height: 40;
+    align-items: center;
+    justify-content: center;
+    background-color: #e6ebf1;
+    opacity: 0.95;
+}
+
+.listRefreshTipText {
+    font-size: 14;
+    text-align: center;
+    color: #4a8bcd;
+}

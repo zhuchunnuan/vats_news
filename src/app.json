@@ -1,0 +1,7 @@
+{
+    "homeJs": "res:home.js",
+    "orientation": "portrait",
+    "require": "res:require.json",
+    "appname": "mytest",
+    "appversion": "1.0.0"
+}

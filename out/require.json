@@ -1,0 +1,30 @@
+{
+  "jsPaths": {
+    "indexjs": "res:myapp/js/index.js",
+    "JQLite": "res:mvvm/agile.vm.sprite.js"
+  },
+  "componentPaths": {
+    "buttonUI": "res:component/button/button.component",
+    "newsliderUI": "res:component/newslider/newslider.component",
+    "titlebarUI": "res:component/titlebar/titlebar.component",
+    "tabbarUI": "res:component/tabbar/tabbar.component",
+    "menubarUI": "res:component/menubar/menubar.component",
+    "wangyi-message": "res:myapp/template/wangyi-message.component",
+    "wangyi-live": "res:myapp/template/wangyi-live.component",
+    "wangyi-messagelist": "res:myapp/template/messagelist.component",
+    "wangyi-livelist": "res:myapp/template/livelist.component",
+    "wangyi-livetabbar": "res:myapp/template/livetabbar.component",
+    "popmenuUI": "res:component/popmenu/popmenu.component",
+    "popbottommenuUI": "res:component/popbottommenu/popbottommenu.component",
+    "switchUI": "res:component/switch/switch.component",
+    "gridmenuUI": "res:component/gridmenu/gridmenu.component"
+  },
+  "cssPaths": {
+    "indexcss": "res:myapp/css/index.css",
+    "messagecss": "res:myapp/css/message.css",
+    "messagelistcss": "res:myapp/css/messagelist.css",
+    "livetabbarcss": "res:myapp/css/livetabbar.css",
+    "livecss": "res:myapp/css/live.css",
+    "livelistcss": "res:myapp/css/livelist.css"
+  }
+}

@@ -1,0 +1,322 @@
+<page>
+    <module>
+        <![CDATA[
+     
+    ]]>
+    </module>
+    <script>
+        <![CDATA[
+        var document = require("Document");
+        var ui = require("UI");
+        var console = require("Console");
+        var Time = require("Time");
+        //定义一个模板类
+        var Livetabbar = function () {
+            //这里定义一些变量
+            this.titleBox = null;
+            this.titleBoxTab = null;
+            this.titleBoxTabItemBg = null;
+            this.titleBoxTabItem1 = null;
+            this.titleBoxTabItem2 = null;
+            this.titleBoxTabItem3 = null;
+
+            this.titleBoxTabItemText1 = null;
+            this.titleBoxTabItemText2 = null;
+            this.titleBoxTabItemText3 = null;
+
+            this.sliderdom = null;
+
+            this.titleBoxTabItemBgIndex = 0;
+
+            this.childrenObj = null;
+            this.oldposition = 0;
+
+            this.w_r = 0;
+
+
+
+        };
+
+        Livetabbar.prototype = {
+            //模板组件创建的时候执行
+            created: function () {
+                var copythis = this;
+                this.titleBox = this.getElement("titleBox");
+                this.titleBoxTab = this.getElement("titleBoxTab");
+                this.titleBoxTabItemBg = this.getElement("titleBoxTabItemBg");
+                this.titleBoxTabItem1 = this.getElement("titleBoxTabItem1");
+                this.titleBoxTabItem2 = this.getElement("titleBoxTabItem2");
+                this.titleBoxTabItem3 = this.getElement("titleBoxTabItem3");
+
+                this.titleBoxTabItemText1 = this.getElement("titleBoxTabItemText1");
+                this.titleBoxTabItemText2 = this.getElement("titleBoxTabItemText2");
+                this.titleBoxTabItemText3 = this.getElement("titleBoxTabItemText3");
+
+                this.childrenObj = this.titleBoxTab.getChildren();//注意这里还包含的有背景的box,到时候需要减一
+
+
+                this.titleBoxTab.on("click", function (e) {
+                    var obj = e.target;
+                    var tag = obj.getTag();
+
+
+                    if (obj.getId() == "titleBoxTab" || obj.getId() == "titleBoxTabItemBg")
+                        return;
+
+                    var index = 0;
+                    if (tag == "text") {
+                        var parentObj = obj.getParent().getParent();
+                        var children = parentObj.getChildren();
+                        for (var i = 1; i < children.length; i++) {
+                            var textObj = children[i].getFirstChild();
+                            if (textObj != null) {
+                                if (obj.getText() == textObj.getText()) {
+                                    textObj.setStyle("color", "#eb413d");
+                                    index = i - 1;
+
+                                } else {
+
+                                    textObj.setStyle("color", "#ffffff");
+                                }
+                            }
+                        }
+                    } else if (tag == "box") {
+                        var parentObj = obj.getParent();
+                        var children = parentObj.getChildren();
+                        var index = 0;
+                        for (var i = 1; i < children.length; i++) {
+                            var textObj = children[i].getFirstChild();
+                            if (textObj != null) {
+                                if (obj.getFirstChild().getText() == textObj.getText()) {
+                                    textObj.setStyle("color", "#eb413d");
+                                    index = i - 1;
+
+                                } else {
+                                    textObj.setStyle("color", "#ffffff");
+                                }
+                            }
+                        }
+                    } else {
+                        return;
+                    }
+
+
+                    copythis.titleBoxTabItemBgIndex = index;
+                    copythis.sliderdom.setAttr("index", copythis.titleBoxTabItemBgIndex);
+
+                });
+
+
+            },
+            binddom: function (dom) {
+                var copythis = this;
+                this.sliderdom = dom;
+
+                this.sliderdom.on("pageScroll", callbackscoll);
+                function callbackscoll(e, param) {
+                    //这里比较是为了防止里面有slider组件 网上冒泡，而监听到了。 
+                    if (e.target == copythis.sliderdom) {
+                        var position = param.position;
+                        var direction = param.direction;
+                        var offset = param.offset;
+                        copythis.setPageScroll(param);
+                    }
+
+                }
+
+
+
+            },
+            setPageScroll: function (json) {
+
+
+                var position = json.position;
+                var direction = json.direction;
+                var offset = json.offset;
+                var frame = this.titleBoxTabItemBg.getFrame();
+                var btnWidth = frame.width;
+                //console.log("position:"+position + ",btnWidth:"+btnWidth +  ",btnHeight:"+frame.height+",btnX:"+frame.x +",btnY:"+frame.y);
+                //选中色值  色值从RGB(255,255,255) 渐变为 RGB（235,65,61）
+                var red = 235;
+                var green = 65;
+                var blue = 61;
+
+                //边缘会有弹性，这里判断offset=0时，不执行
+                if (offset == 0)
+                    return;
+
+                //左滑
+                if (direction == 0) {
+                    //得到当前滑动了第几个容器，由于快速滑动postion不会变，根据offset+postion一起判断
+                    var n = Math.floor(offset) + position;
+
+                    //判断是否滑动到最后一个
+                    if ((n + 1) == this.childrenObj.length - 1) {
+                        if (offset - Math.floor(offset) > 0) {
+                            return;
+                        }
+                        var x_length = 0;
+                        for (i = 0; i < n; i++) {
+                            x_length = x_length + this.childrenObj[i + 1].getFrame().width;
+                        }
+                        frame.x = x_length;
+                        frame.width = this.childrenObj[n + 1].getFrame().width;
+
+
+                        this.titleBoxTabItemBg.setFrame(frame);
+                        //避免刷新又刷回去，这里直接修改样式
+                        this.titleBoxTabItemBg.setStyle("left", frame.x);
+                        this.w_r = x_length;
+                        this.oldposition = n;
+                        //console.log(";position:" + position + ";direction:" + direction + ";offset:" + offset);
+                        return;
+                    }
+
+                    //记录当前滑动条离容器最左边的距离
+                    var x_length = 0;
+                    for (i = 0; i < n; i++) {
+                        x_length = x_length + this.childrenObj[i + 1].getFrame().width;
+                    }
+                    this.w_r = x_length;
+                    //计算滑动比例
+                    var s = (offset + position) - n;
+
+
+                    //当前位置滑动条宽度
+                    var current_width = this.childrenObj[n + 1].getFrame().width;
+                    //下一个位置滑动条的宽度
+                    var next_width = this.childrenObj[n + 2].getFrame().width;
+                    //算出滑动距离                    
+                    frame.x = this.w_r + s * this.childrenObj[n + 1].getFrame().width;
+                    frame.width = this.childrenObj[n + 1].getFrame().width + (next_width - current_width) * s;
+                    //底部背景条位置变化
+                    this.titleBoxTabItemBg.setFrame(frame);
+                    this.titleBoxTabItemBg.setStyle("left", frame.x);
+
+                    //当前tab色值变换
+                    var currenTextObj = this.childrenObj[n + 1].getFirstChild();
+                    var nextTextObj = this.childrenObj[n + 2].getFirstChild();
+                    red = red + (255 - red) * s;
+                    green = green + (255 - green) * s;
+                    blue = blue + (255 - blue) * s;
+                    var color = "rgb(" + red + "," + green + "," + blue + ")";
+                    currenTextObj.setStyle("color", color);
+                    //右侧tab色值变换
+                    var red = 235;
+                    var green = 65;
+                    var blue = 61;
+                    red = 255 - (255 - red) * s;
+                    green = 255 - (255 - green) * s;
+                    blue = 255 - (255 - blue) * s;
+                    var color = "rgb(" + red + "," + green + "," + blue + ")";
+                    nextTextObj.setStyle("color", color);
+
+
+
+
+                    //这里解决间隔切换的问题
+                    if (n != 0 && offset > 1) {
+                        this.childrenObj[this.oldposition + 1].getFirstChild().setStyle("color", "#ffffff");
+                    }
+                    this.oldposition = n;
+
+
+                }
+                //右滑
+                else {
+                    var n = position - Math.floor(offset);
+                    var x_length = 0;
+                    for (i = 0; i < n; i++) {
+                        x_length = x_length + this.childrenObj[i + 1].getFrame().width;
+                    }
+                    this.w_r = x_length;
+                    if (position == 0)
+                        return;
+                    if ((position) == 0)
+                        return;
+
+                    if (n == 0) {
+                        if (offset - Math.floor(offset) > 0) {
+                            return;
+                        }
+                        frame.x = 0;
+                        frame.width = this.childrenObj[0 + 1].getFrame().width;
+                        this.titleBoxTabItemBg.setFrame(frame);
+                        this.titleBoxTabItemBg.setStyle("left", frame.x);
+                        this.w_r = 0;
+                        this.oldposition = 0;
+                        return;
+                    }
+
+                    var s = (offset + n) - position;
+
+                    var current_width = this.childrenObj[n + 1].getFrame().width;
+                    var next_width = this.childrenObj[n].getFrame().width;
+
+                    frame.x = this.w_r - s * this.childrenObj[n].getFrame().width;
+                    frame.width = this.childrenObj[n + 1].getFrame().width + (next_width - current_width) * s;
+
+                    this.titleBoxTabItemBg.setFrame(frame);
+                    this.titleBoxTabItemBg.setStyle("left", frame.x);
+
+                    //这里解决间隔切换的问题 
+                    if ((n + 1) != this.childrenObj.length - 1 && offset > 1) {
+
+                        this.childrenObj[this.oldposition + 1].getFirstChild().setStyle("color", this.color);
+                    }
+                    this.oldposition = n;
+
+                    //当前tab色值变换
+                    var currenTextObj = this.childrenObj[n + 1].getFirstChild();
+                    var beforeTextObj = this.childrenObj[n].getFirstChild();
+                    red = red + (255 - red) * s;
+                    green = green + (255 - green) * s;
+                    blue = blue + (255 - blue) * s;
+                    var color = "rgb(" + red + "," + green + "," + blue + ")";
+                    currenTextObj.setStyle("color", color);
+                    //左侧tab色值变换
+                    var red = 235;
+                    var green = 65;
+                    var blue = 61;
+                    red = 255 - (255 - red) * s;
+                    green = 255 - (255 - green) * s;
+                    blue = 255 - (255 - blue) * s;
+                    var color = "rgb(" + red + "," + green + "," + blue + ")";
+                    beforeTextObj.setStyle("color", color);
+
+
+                }
+
+            },
+            //属性变更回调函数
+            attrChanged: function (attrName, attrValue) { },
+            //样式变更回调函数
+            styleChanged: function (styleName, styleValue) { },
+            //监听横竖屏切换时候的回调
+            orientationChanged: function (orientation, screenWidth, screenHeight) { }
+
+        }
+
+        module.exports = Livetabbar;
+        ]]>
+    </script>
+    <style>
+        @import url("livetabbarcss");
+    </style>
+    <ui>
+        <box id="titleBox" class="titleBox">
+            <box id="titleBoxTab" class="titleBoxTab">
+                <box id="titleBoxTabItemBg" class="titleBoxTabItemBg" />
+                <box id="titleBoxTabItem1" class="titleBoxTabItem">
+                    <text id="titleBoxTabItemText1" class="titleBoxTabItemText" style="color: #eb413d">热门</text>
+                </box>
+                <box id="titleBoxTabItem2" class="titleBoxTabItem">
+                    <text id="titleBoxTabItemText2" class="titleBoxTabItemText">分类</text>
+                </box>
+                <box id="titleBoxTabItem3" class="titleBoxTabItem">
+                    <text id="titleBoxTabItemText3" class="titleBoxTabItemText">订阅</text>
+                </box>
+            </box>
+        </box>
+    </ui>
+</page>

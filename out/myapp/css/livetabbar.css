@@ -1,0 +1,45 @@
+.titleBox {
+    height: 65;
+    padding: 20 0 0 0;
+    background-color: #eb413d;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.titleBoxTab {
+    height: 30;
+    width: 180;
+    border-width: 1;
+    border-radius: 15;
+    border-color: #ef9899;
+    flex-wrap: nowrap;
+    flex-direction: row;
+   
+    justify-content: center;
+}
+
+.titleBoxTabItem {
+    flex: 1;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.titleBoxTabItemText {
+    font-size: 15;
+    color: #ffffff;
+    text-align: center;
+}
+
+.titleBoxTabItemBg {
+    background-color: #ffffff;
+    border-radius: 15;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 60;
+}
